@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BITS_PER_WORD 8
 
@@ -34,6 +35,26 @@ struct spi_data {
 };
 
 static struct spi_data* g_spi_data;
+
+int spi_close_port(int spi_device) {
+  assert(g_spi_data != NULL);
+
+  int  status_value = -1;
+  int* cs_fd;
+
+  cs_fd = (spi_device)
+    ? &g_spi_data->fd.cs1
+    : &g_spi_data->fd.cs0;
+
+  status_value = close(*cs_fd);
+
+  if(status_value < 0) {
+    perror("Could not close SPI device");
+    return STATUS_CLOSE_SPI_DEVICE;
+  }
+
+  return status_value;
+}
 
 int spi_open_port(int spi_device, uint8_t mode, uint32_t speed) {
   if(g_spi_data) {
@@ -69,6 +90,7 @@ int spi_open_port(int spi_device, uint8_t mode, uint32_t speed) {
   status_value = ioctl(*cs_fd, mode, val);         \
   if(status_value < 0) {                           \
     perror(errmsg);                                \
+    spi_close_port(spi_device);                    \
     return retcode;                                \
   }                                                \
 
@@ -76,30 +98,10 @@ int spi_open_port(int spi_device, uint8_t mode, uint32_t speed) {
   SET_SPI_MODE(SPI_IOC_RD_MODE,          &g_spi_data->mode,  "Could not set SPI mode to RD",   STATUS_SET_MODE_RD);
   SET_SPI_MODE(SPI_IOC_WR_BITS_PER_WORD, &g_spi_data->bpw,   "Could not set SPI bpw to WR",    STATUS_SET_BPW_WR);
   SET_SPI_MODE(SPI_IOC_RD_BITS_PER_WORD, &g_spi_data->bpw,   "Could not set SPI bpw to RD",    STATUS_SET_BPW_RD);
-  SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &g_spi_data->speed, "Could not set SPI speed to WR.", STATUS_SET_SPEED_WR);
-  SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &g_spi_data->speed, "Could not set SPI speed to RD.", STATUS_SET_SPEED_RD);
+  SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &g_spi_data->speed, "Could not set SPI speed to WR", STATUS_SET_SPEED_WR);
+  SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &g_spi_data->speed, "Could not set SPI speed to RD", STATUS_SET_SPEED_RD);
 
 #undef SET_SPI_MODE
-
-  return status_value;
-}
-
-int spi_close_port(int spi_device) {
-  assert(g_spi_data != NULL);
-
-  int  status_value = -1;
-  int* cs_fd;
-
-  cs_fd = (spi_device)
-    ? &g_spi_data->fd.cs1
-    : &g_spi_data->fd.cs0;
-
-  status_value = close(*cs_fd);
-
-  if(status_value < 0) {
-    perror("Could not close SPI device");
-    return STATUS_CLOSE_SPI_DEVICE;
-  }
 
   return status_value;
 }
@@ -115,6 +117,9 @@ int spi_write_read(int spi_device, uint8_t* tx_data, uint8_t* rx_data, size_t le
   cs_fd = (spi_device)
     ? &g_spi_data->fd.cs1
     : &g_spi_data->fd.cs0;
+
+
+  memset(&spi, 0, sizeof(spi)); 
 
   spi.tx_buf = (uint64_t)tx_data;
   spi.rx_buf = (uint64_t)rx_data;
@@ -142,7 +147,7 @@ int main(void) {
   uint8_t* rx = malloc(100);
   uint8_t  tx[] = {64,65,66,67,68};
 
-  spi_write_read(SPI_CS0, tx, rx, 5, 1);
+  spi_write_read(SPI_CS0, tx, rx, 2, 1);
 
   printf("rx: %s\n", rx);
 
