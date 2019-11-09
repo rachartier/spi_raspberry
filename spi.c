@@ -54,7 +54,7 @@ struct spi_data {
 };
 
 static uint32_t clock_speed(enum clock_divider clock_divider) {
-    uint32_t freq_max = 125000000U;
+    uint32_t freq_max = 250000000U;
 
     if(clock_divider == CLOCK_DIVIDER_FACTOR_1 || clock_divider == CLOCK_DIVIDER_FACTOR_65536)
         return freq_max;
@@ -152,7 +152,7 @@ int spi_write_read(struct spi_data* spi_data, void* tx_data, void* rx_data, size
 }
 
 int main(void) {
-    struct spi_data* spi = spi_open_port(SPI_CS0, 0, CLOCK_DIVIDER_FACTOR_4);
+    struct spi_data* spi = spi_open_port(SPI_CS0, 0, CLOCK_DIVIDER_FACTOR_16);
 
     char tx[] = "Hello World!";
     char rx[256];
