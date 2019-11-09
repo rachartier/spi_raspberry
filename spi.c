@@ -83,7 +83,6 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
     struct spi_data* spi_data = malloc(sizeof(struct spi_data));
     assert(spi_data != NULL);
 
-
     spi_data->mode = mode;
     spi_data->speed = clock_speed(clock_divider);
     spi_data->bpw = BITS_PER_WORD;
@@ -126,20 +125,18 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
 int spi_write_read(struct spi_data* spi_data, void* tx_data, void* rx_data, size_t length, int leave_cs_low) {
     assert(spi_data != NULL);
 
-    struct spi_ioc_transfer spi;
+    struct spi_ioc_transfer spi = {
+        .tx_buf = (uint32_t)tx_data,
+        .rx_buf = (uint32_t)rx_data,
+        .len    = length,
 
-    int  status_value;
+        .delay_usecs   = 0,
+        .speed_hz      = spi_data->speed,
+        .bits_per_word = spi_data->bpw,
+        .cs_change     = leave_cs_low
+    };
 
-    memset(&spi, 0, sizeof(spi)); 
-
-    spi.tx_buf = (uint64_t)tx_data;
-    spi.rx_buf = (uint64_t)rx_data;
-    spi.len    = length;
-
-    spi.delay_usecs   = 0;
-    spi.speed_hz      = spi_data->speed;
-    spi.bits_per_word = spi_data->bpw;
-    spi.cs_change     = leave_cs_low;
+    int status_value;
 
     status_value = ioctl(spi_data->cs_fd, SPI_IOC_MESSAGE(1), &spi);
 
