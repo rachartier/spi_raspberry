@@ -111,12 +111,12 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
         return NULL;                                    \
     }                                                   \
 
-    SET_SPI_MODE(SPI_IOC_WR_MODE,              &spi_data->mode,  "Could not set SPI mode to WR",  STATUS_SET_MODE_WR)
-        SET_SPI_MODE(SPI_IOC_RD_MODE,          &spi_data->mode,  "Could not set SPI mode to RD",  STATUS_SET_MODE_RD)
-        SET_SPI_MODE(SPI_IOC_WR_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to WR",   STATUS_SET_BPW_WR)
-        SET_SPI_MODE(SPI_IOC_RD_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to RD",   STATUS_SET_BPW_RD)
-        SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to WR", STATUS_SET_SPEED_WR)
-        SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to RD", STATUS_SET_SPEED_RD)
+    SET_SPI_MODE(SPI_IOC_WR_MODE,          &spi_data->mode,  "Could not set SPI mode to WR",  STATUS_SET_MODE_WR)
+    SET_SPI_MODE(SPI_IOC_RD_MODE,          &spi_data->mode,  "Could not set SPI mode to RD",  STATUS_SET_MODE_RD)
+    SET_SPI_MODE(SPI_IOC_WR_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to WR",   STATUS_SET_BPW_WR)
+    SET_SPI_MODE(SPI_IOC_RD_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to RD",   STATUS_SET_BPW_RD)
+    SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to WR", STATUS_SET_SPEED_WR)
+    SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to RD", STATUS_SET_SPEED_RD)
 
 #undef SET_SPI_MODE
 
@@ -162,4 +162,5 @@ int main(void) {
     printf("rx: %s", rx);
 
     spi_close_port(spi);
+    return 0;
 }
