@@ -21,7 +21,7 @@ void spi_test_message_str(struct spi_data *spi) {
         spi_add_message(spi, message[i]);
     }
 
-    uint8_t* data_read = spi_write_read(spi, 1);
+    uint8_t* data_read = spi_write_read(spi, 128 * sizeof(uint8_t), 1);
     printf("string rx: %s\n", data_read);
 
     free(data_read);
@@ -43,7 +43,7 @@ void spi_test_message_byte(struct spi_data *spi) {
         spi_add_message(spi, message[i]);
     }
 
-    uint8_t* data_read = spi_write_read(spi, 1);
+    uint8_t* data_read = spi_write_read(spi, 6 * sizeof(uint8_t), 1);
 
     printf("\nbytes rx:\n");
     for(int i = 0; i < 6; ++i) {
@@ -53,7 +53,7 @@ void spi_test_message_byte(struct spi_data *spi) {
     free(data_read);
 }
 
-struct obj_test {int x,y,z; char name[32];};
+struct obj_test {int x,y,z; char name[32 * sizeof(uint8_t)];};
 
 void spi_test_message_obj(struct spi_data *spi) {
     struct obj_test obj_test = {
@@ -70,18 +70,15 @@ void spi_test_message_obj(struct spi_data *spi) {
 
     spi_add_message(spi, message);
 
-    uint8_t* data_read = spi_write_read(spi, 1);
-    struct obj_test obj_received;
-
-    memcpy(&obj_received, data_read, sizeof(struct obj_test));
+    struct obj_test* obj_received = spi_write_read(spi, sizeof(*obj_received), 1);
 
     printf("\nobj rx: x:%d y:%d z:%d name:%s\n", 
-        obj_received.x, 
-        obj_received.y, 
-        obj_received.z, 
-        obj_received.name);
+        obj_received->x, 
+        obj_received->y, 
+        obj_received->z, 
+        obj_received->name);
 
-    free(data_read);
+    free(obj_received);
 }
 
 int main(void) {

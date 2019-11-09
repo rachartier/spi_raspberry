@@ -57,19 +57,18 @@ struct spi_message {
 struct spi_data {
     struct spi_message message[MAX_MESSAGES];
 
-    uint32_t  speed;
-    uint8_t   mode;
-    uint8_t   bpw;
-    int8_t    cs_fd;
+    uint32_t speed;
+    uint8_t  mode;
+    uint8_t  bpw;
+    int8_t   cs_fd;
 
     int32_t   _nqueue_messages;
 };
 
 struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider clock_divider);
 
-void spi_add_message(struct spi_data *spi, const struct spi_message message);
-
-int spi_close_port(struct spi_data* spi_data);
-uint8_t* spi_write_read(struct spi_data* spi_data, int leave_cs_low);
+void  spi_add_message(struct spi_data *spi, const struct spi_message message);
+void* spi_write_read(struct spi_data* spi_data, size_t rx_buf_size, int leave_cs_low);
+int   spi_close_port(struct spi_data* spi_data);
 
 #endif

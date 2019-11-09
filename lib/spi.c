@@ -37,22 +37,19 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
         return NULL;
     }
 
-    int status_value = 0;
-
 #define SET_SPI_MODE(mode, val, errmsg, retcode)        \
-    status_value = ioctl(spi_data->cs_fd, mode, val);   \
-    if(status_value < 0) {                              \
+    if(ioctl(spi_data->cs_fd, mode, val) < 0) {         \
         perror(errmsg);                                 \
         spi_close_port(spi_data);                       \
         return NULL;                                    \
     }                                                   \
 
     SET_SPI_MODE(SPI_IOC_WR_MODE,          &spi_data->mode,  "Could not set SPI mode to WR",  STATUS_SET_MODE_WR)
-        SET_SPI_MODE(SPI_IOC_RD_MODE,          &spi_data->mode,  "Could not set SPI mode to RD",  STATUS_SET_MODE_RD)
-        SET_SPI_MODE(SPI_IOC_WR_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to WR",   STATUS_SET_BPW_WR)
-        SET_SPI_MODE(SPI_IOC_RD_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to RD",   STATUS_SET_BPW_RD)
-        SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to WR", STATUS_SET_SPEED_WR)
-        SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to RD", STATUS_SET_SPEED_RD)
+    SET_SPI_MODE(SPI_IOC_RD_MODE,          &spi_data->mode,  "Could not set SPI mode to RD",  STATUS_SET_MODE_RD)
+    SET_SPI_MODE(SPI_IOC_WR_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to WR",   STATUS_SET_BPW_WR)
+    SET_SPI_MODE(SPI_IOC_RD_BITS_PER_WORD, &spi_data->bpw,   "Could not set SPI bpw to RD",   STATUS_SET_BPW_RD)
+    SET_SPI_MODE(SPI_IOC_WR_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to WR", STATUS_SET_SPEED_WR)
+    SET_SPI_MODE(SPI_IOC_RD_MAX_SPEED_HZ,  &spi_data->speed, "Could not set SPI speed to RD", STATUS_SET_SPEED_RD)
 
 #undef SET_SPI_MODE
 
@@ -77,19 +74,16 @@ int spi_close_port(struct spi_data* spi_data) {
 }
 
 void spi_add_message(struct spi_data *spi, const struct spi_message message) {
-    struct spi_message* spi_message = &spi->message[spi->_nqueue_messages];
-
-    memset(&spi_message->data, 0, spi_message->size);
-    *spi_message = message;
+    spi->message[spi->_nqueue_messages] = message;
 
     spi->_nqueue_messages++;
     assert(spi->_nqueue_messages < MAX_MESSAGES);
 }
 
+/*
 static uint8_t* _alloc_rx(struct spi_data* spi_data) {
     uint32_t number_messages = spi_data->_nqueue_messages;
     uint32_t total_msg_size = 0U;
-
 
     for(uint32_t i = 0; i < number_messages; ++i) {
         total_msg_size += spi_data->message[i].size;
@@ -100,14 +94,16 @@ static uint8_t* _alloc_rx(struct spi_data* spi_data) {
 
     return rx;
 }
+*/
 
-uint8_t* spi_write_read(struct spi_data* spi_data, int leave_cs_low) {
+void* spi_write_read(struct spi_data* spi_data, size_t rx_buf_size, int leave_cs_low) {
     assert(spi_data != NULL);
 
     uint32_t number_messages = spi_data->_nqueue_messages;
     uint32_t total_msg_sent_size = 0U;
 
-    uint8_t* rx_data = _alloc_rx(spi_data);
+    void* rx_data = malloc(rx_buf_size);//_alloc_rx(spi_data);
+    assert(rx_data != NULL);
 
     struct spi_ioc_transfer spi[number_messages];
 
