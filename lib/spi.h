@@ -27,7 +27,6 @@
 #define SPI_CS0   0
 #define SPI_CS1   1
 
-
 enum clock_divider {
     CLOCK_DIVIDER_FACTOR_1 = 1 << 0,
     CLOCK_DIVIDER_FACTOR_2 = 1 << 1,

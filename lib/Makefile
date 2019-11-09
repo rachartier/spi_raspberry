@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O3 -Wall -Wextra -Werror -c
+CFLAGS=-O3 -Wall -Wextra -Werror -fPIC -c
 LDFLAGS=-fPIC -shared
 OBJS=spi.o
 

@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int errnospi = 0;
-
 static uint32_t clock_speed(enum clock_divider clock_divider) {
     uint32_t freq_max = 250000000U;
 
@@ -33,7 +31,6 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
 
     if(spi_data->cs_fd < 0) {
         perror("Could not open SPI device");
-        errnospi = STATUS_OPEN_SPI_DEVICE;
         free(spi_data);
 
         return NULL;
@@ -46,7 +43,6 @@ struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider 
     if(status_value < 0) {                              \
         perror(errmsg);                                 \
         spi_close_port(spi_data);                       \
-        errnospi = retcode;                             \
         return NULL;                                    \
     }                                                   \
 

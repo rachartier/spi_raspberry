@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-O3 -Wall -Wextra -Werror -c
 LDFLAGS= -Llib -lspi -Wl,-rpath,lib/
-OBJS=main.o
+OBJS=test.o
 
 all: test_spi
 
@@ -23,4 +23,4 @@ clean:
 	rm -f libspi.so 
 	rm -f spi.h
 	rm -f $(OBJS)
-	rm test_spi
+	rm -f test_spi
