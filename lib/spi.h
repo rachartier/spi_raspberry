@@ -27,6 +27,8 @@
 #define SPI_CS0   0
 #define SPI_CS1   1
 
+#define MAX_MESSAGES 16
+
 enum clock_divider {
     CLOCK_DIVIDER_FACTOR_1 = 1 << 0,
     CLOCK_DIVIDER_FACTOR_2 = 1 << 1,
@@ -47,17 +49,27 @@ enum clock_divider {
     CLOCK_DIVIDER_FACTOR_65536 = 0
 };
 
+struct spi_message {
+    void*  data;
+    size_t size;
+};
+
 struct spi_data {
-    int cs_fd;
+    struct spi_message message[MAX_MESSAGES];
 
     uint32_t  speed;
     uint8_t   mode;
     uint8_t   bpw;
+    int8_t    cs_fd;
+
+    int32_t   _nqueue_messages;
 };
 
 struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider clock_divider);
 
+void spi_add_message(struct spi_data *spi, const struct spi_message message);
+
 int spi_close_port(struct spi_data* spi_data);
-int spi_write_read(struct spi_data* spi_data, void* tx_data, void* rx_data, size_t length, int leave_cs_low); 
+uint8_t* spi_write_read(struct spi_data* spi_data, int leave_cs_low);
 
 #endif

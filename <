@@ -45,15 +45,15 @@ void spi_test_message_byte(struct spi_data *spi) {
 
     uint8_t* data_read = spi_write_read(spi, 1);
 
-    printf("\nbytes rx:\n");
+    printf("bytes rx:\n");
     for(int i = 0; i < 6; ++i) {
-        printf("\t[%d] %d\n", i, data_read[i]);
+        printf("[%d] %d\n", i, data_read[i]);
     }
 
     free(data_read);
 }
 
-struct obj_test {int x,y,z; char name[32];};
+struct obj_test {int x,y,z; char name[32]};
 
 void spi_test_message_obj(struct spi_data *spi) {
     struct obj_test obj_test = {
@@ -73,9 +73,9 @@ void spi_test_message_obj(struct spi_data *spi) {
     uint8_t* data_read = spi_write_read(spi, 1);
     struct obj_test obj_received;
 
-    memcpy(&obj_received, data_read, sizeof(struct obj_test));
+    memcpy(&obj_received, data_red, sizeof(struct obj_test));
 
-    printf("\nobj rx: x:%d y:%d z:%d name:%s\n", 
+    printf("obj rx: x:%d y:%d z:%d name:%s\n", 
         obj_received.x, 
         obj_received.y, 
         obj_received.z, 
@@ -89,7 +89,6 @@ int main(void) {
 
     spi_test_message_str(spi);
     spi_test_message_byte(spi);
-    spi_test_message_obj(spi);
 
     spi_close_port(spi);
 
