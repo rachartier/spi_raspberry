@@ -8,11 +8,8 @@ all: test_spi
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-test_spi: libspi cpyheader $(OBJS) 
+test_spi: libspi $(OBJS) 
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
-
-cpyheader:
-	cp lib/spi.h .
 
 libspi:
 	$(MAKE) -C lib/

@@ -1,4 +1,4 @@
-#include "spi.h"
+#include "lib/spi.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,7 +9,6 @@ void spi_test_message_str(struct spi_data *spi) {
     const struct spi_message message[] = {
 #define CONSTRUCT_MSG_STR(str) \
         {str, strlen(str)}
-
         CONSTRUCT_MSG_STR("Hello World"),
         CONSTRUCT_MSG_STR("Hello World 2"),
         CONSTRUCT_MSG_STR("Hello World 3"),
@@ -64,7 +63,7 @@ void spi_test_message_obj(struct spi_data *spi) {
     };
 
     const struct spi_message message = {
-        &obj_test, 
+        &obj_test,
         sizeof(struct obj_test)
     };
 
@@ -72,10 +71,10 @@ void spi_test_message_obj(struct spi_data *spi) {
 
     struct obj_test* obj_received = spi_write_read(spi, sizeof(*obj_received), 1);
 
-    printf("\nobj rx: x:%d y:%d z:%d name:%s\n", 
-        obj_received->x, 
-        obj_received->y, 
-        obj_received->z, 
+    printf("\nobj rx: x:%d y:%d z:%d name:%s\n",
+        obj_received->x,
+        obj_received->y,
+        obj_received->z,
         obj_received->name);
 
     free(obj_received);
