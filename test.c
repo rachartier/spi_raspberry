@@ -81,11 +81,27 @@ void spi_test_message_obj(struct spi_data *spi) {
 }
 
 int main(void) {
-    struct spi_data* spi = spi_open_port(SPI_CS0, 0, CLOCK_DIVIDER_FACTOR_16);
+    struct spi_data* spi = spi_open_port(SPI_CS1, 0, CLOCK_DIVIDER_FACTOR_500000);
 
-    spi_test_message_str(spi);
-    spi_test_message_byte(spi);
-    spi_test_message_obj(spi);
+    uint8_t command[29];
+    
+    command[0] = 0;
+    command[1] = 25;
+    command[2] = 1;
+    command[3] = ((100 >> 8) & 0xFF);
+    command[4] = 100;
+    
+    const struct spi_message message = {
+        &command,
+        29
+    };
+
+    spi_add_message(spi, message);
+    
+    char *result = spi_write_read(spi, 1024 * sizeof(uint8_t), 0);
+
+    for(int i = 0; i  < 1024; ++i) printf("%d", (int)result[i]);
+    printf("data: %s\n", result + 4);
 
     spi_close_port(spi);
 
