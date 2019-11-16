@@ -83,26 +83,12 @@ void spi_test_message_obj(struct spi_data *spi) {
 }
 
 int main(void) {
-    struct spi_data* spi = spi_open_port_fixed_clock(SPI_CS1, 0, 500000);
+    struct spi_data* spi = spi_open_port(SPI_CS0, 0, CLOCK_DIVIDER_FACTOR_16);
 
-/*    spi_test_message_str(spi);
+    spi_test_message_str(spi);
     spi_test_message_byte(spi);
     spi_test_message_obj(spi);
-*/
 
-    uint8_t bytes[29];
-
-    bytes[0] = 0;
-    bytes[1] = 1;
-
-    char* result = spi_write_read_string(spi, bytes, 29, 64, 0);
-
-
-        for(int i = 0; i < 64; ++i) {
-            printf("%x ", (int)result[i]);
-        }
-
-    printf("data: %s", result + 4);
     spi_close_port(spi);
 
     return 0;
