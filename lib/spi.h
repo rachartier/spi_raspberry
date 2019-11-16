@@ -5,10 +5,10 @@
 #include <string.h>
 
 #if __GNUC__
-# if __ARM_ARCH_6__ 
-#  define __ENV_32 
+# if __ARM_ARCH_8__ 
+#  define __ENV_64 
 # else
-#  define __ENV_64
+#  define __ENV_32
 # endif
 #endif 
 
@@ -67,8 +67,11 @@ struct spi_data {
 
 struct spi_data* spi_open_port(int spi_device, uint8_t mode, enum clock_divider clock_divider);
 
+struct spi_data* spi_open_port_fixed_clock(int spi_device, uint8_t mode, uint32_t clockspeed);
+
 void  spi_add_message(struct spi_data *spi, const struct spi_message message);
 void* spi_write_read(struct spi_data* spi_data, size_t rx_buf_size, int leave_cs_low);
+void* spi_write_read_string(struct spi_data* spi_data, const uint8_t* str, size_t chars, size_t rx_buf_size, int leave_cs_low);
 int   spi_close_port(struct spi_data* spi_data);
 
 #endif

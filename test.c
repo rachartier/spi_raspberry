@@ -27,7 +27,7 @@ void spi_test_message_str(struct spi_data *spi) {
 }
 
 void spi_test_message_byte(struct spi_data *spi) {
-    uint8_t bytes[] = {65,66,67,68,69,70};
+    uint8_t bytes[] = {64,65,66,67,68,69,0};
 
     const struct spi_message message[] = {
         {&bytes[0], sizeof(uint8_t)},
@@ -35,10 +35,11 @@ void spi_test_message_byte(struct spi_data *spi) {
         {&bytes[2], sizeof(uint8_t)},
         {&bytes[3], sizeof(uint8_t)},
         {&bytes[4], sizeof(uint8_t)},
-        {&bytes[5], sizeof(uint8_t)}
+        {&bytes[5], sizeof(uint8_t)},
+        {bytes, 7*sizeof(uint8_t)}
     };
 
-    for(int i = 0; i < 6; ++i) {
+    for(int i = 0; i < 7; ++i) {
         spi_add_message(spi, message[i]);
     }
 
@@ -48,6 +49,7 @@ void spi_test_message_byte(struct spi_data *spi) {
     for(int i = 0; i < 6; ++i) {
         printf("\t[%d] %d\n", i, data_read[i]);
     }
+    printf("\t%s\n", 7 + data_read);
 
     free(data_read);
 }
@@ -81,12 +83,26 @@ void spi_test_message_obj(struct spi_data *spi) {
 }
 
 int main(void) {
-    struct spi_data* spi = spi_open_port(SPI_CS0, 0, CLOCK_DIVIDER_FACTOR_16);
+    struct spi_data* spi = spi_open_port_fixed_clock(SPI_CS1, 0, 500000);
 
-    spi_test_message_str(spi);
+/*    spi_test_message_str(spi);
     spi_test_message_byte(spi);
     spi_test_message_obj(spi);
+*/
 
+    uint8_t bytes[29];
+
+    bytes[0] = 0;
+    bytes[1] = 1;
+
+    char* result = spi_write_read_string(spi, bytes, 29, 64, 0);
+
+
+        for(int i = 0; i < 64; ++i) {
+            printf("%x ", (int)result[i]);
+        }
+
+    printf("data: %s", result + 4);
     spi_close_port(spi);
 
     return 0;

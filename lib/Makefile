@@ -1,4 +1,4 @@
-CC=gcc
+CC=arm-linux-gnueabihf-gcc
 CFLAGS=-O3 -Wall -Wextra -Werror -fPIC -c
 LDFLAGS=-fPIC -shared
 OBJS=spi.o
